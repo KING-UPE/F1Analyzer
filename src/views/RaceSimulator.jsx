@@ -8,25 +8,30 @@ export default function RaceSimulatorView() {
     const [loading, setLoading] = useState(false);
     const [results, setResults] = useState(null);
 
-        // Default Starting Constants (To be dialed in by user)
+        // Default Starting Constants matching official Python fallback
     const [constants, setConstants] = useState({
-        SOFT_SPEED: -1.2,
-        SOFT_DEG: 0.15,
-        SOFT_WINDOW: 3,
+        SOFT_SPEED: -0.75,
+        SOFT_DEG: 0.042,
+        SOFT_WINDOW: 14,
+        SOFT_CLIFF: 0.060,
         MEDIUM_SPEED: 0.0,
-        MEDIUM_DEG: 0.08,
-        MEDIUM_WINDOW: 5,
-        HARD_SPEED: 1.5,
-        HARD_DEG: 0.04,
-        HARD_WINDOW: 10,
+        MEDIUM_DEG: 0.030,
+        MEDIUM_WINDOW: 20,
+        MEDIUM_CLIFF: 0.043,
+        HARD_SPEED: 0.62,
+        HARD_DEG: 0.022,
+        HARD_WINDOW: 28,
+        HARD_CLIFF: 0.030,
         INTERMEDIATE_SPEED: 5.0,
         INTERMEDIATE_DEG: 0.20,
         INTERMEDIATE_WINDOW: 2,
+        INTERMEDIATE_CLIFF: 0.10,
         WET_SPEED: 8.0,
         WET_DEG: 0.10,
         WET_WINDOW: 4,
-        NOMINAL_TEMP: 26.0,
-        TEMP_SENSITIVITY: 0.05
+        WET_CLIFF: 0.05,
+        NOMINAL_TEMP: 30.0,
+        TEMP_SENSITIVITY: 0.012
     });
 
     const handleConstantChange = (field, val) => {
@@ -100,7 +105,7 @@ export default function RaceSimulatorView() {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <label className="input-label" style={{ margin: 0 }}>Temp Multiplier</label>
-                            <input type="number" step="0.01" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.TEMP_SENSITIVITY} onChange={e => handleConstantChange('TEMP_SENSITIVITY', e.target.value)} />
+                            <input type="number" step="0.001" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.TEMP_SENSITIVITY} onChange={e => handleConstantChange('TEMP_SENSITIVITY', e.target.value)} />
                         </div>
 
                         <div style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '0.5rem', marginTop: '1rem' }}>
@@ -112,11 +117,15 @@ export default function RaceSimulatorView() {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <label className="input-label" style={{ margin: 0 }}>Degradation Rate</label>
-                            <input type="number" step="0.01" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.SOFT_DEG} onChange={e => handleConstantChange('SOFT_DEG', e.target.value)} />
+                            <input type="number" step="0.001" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.SOFT_DEG} onChange={e => handleConstantChange('SOFT_DEG', e.target.value)} />
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <label className="input-label" style={{ margin: 0 }}>Initial Peak Laps</label>
+                            <label className="input-label" style={{ margin: 0 }}>Cliff Lap Start</label>
                             <input type="number" step="1" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.SOFT_WINDOW} onChange={e => handleConstantChange('SOFT_WINDOW', e.target.value)} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <label className="input-label" style={{ margin: 0 }}>Cliff Degradation</label>
+                            <input type="number" step="0.001" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.SOFT_CLIFF} onChange={e => handleConstantChange('SOFT_CLIFF', e.target.value)} />
                         </div>
 
                         <div style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '0.5rem', marginTop: '1rem' }}>
@@ -128,11 +137,15 @@ export default function RaceSimulatorView() {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <label className="input-label" style={{ margin: 0 }}>Degradation Rate</label>
-                            <input type="number" step="0.01" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.MEDIUM_DEG} onChange={e => handleConstantChange('MEDIUM_DEG', e.target.value)} />
+                            <input type="number" step="0.001" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.MEDIUM_DEG} onChange={e => handleConstantChange('MEDIUM_DEG', e.target.value)} />
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <label className="input-label" style={{ margin: 0 }}>Initial Peak Laps</label>
+                            <label className="input-label" style={{ margin: 0 }}>Cliff Lap Start</label>
                             <input type="number" step="1" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.MEDIUM_WINDOW} onChange={e => handleConstantChange('MEDIUM_WINDOW', e.target.value)} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <label className="input-label" style={{ margin: 0 }}>Cliff Degradation</label>
+                            <input type="number" step="0.001" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.MEDIUM_CLIFF} onChange={e => handleConstantChange('MEDIUM_CLIFF', e.target.value)} />
                         </div>
 
                         <div style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '0.5rem', marginTop: '1rem' }}>
@@ -144,11 +157,15 @@ export default function RaceSimulatorView() {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <label className="input-label" style={{ margin: 0 }}>Degradation Rate</label>
-                            <input type="number" step="0.01" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.HARD_DEG} onChange={e => handleConstantChange('HARD_DEG', e.target.value)} />
+                            <input type="number" step="0.001" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.HARD_DEG} onChange={e => handleConstantChange('HARD_DEG', e.target.value)} />
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <label className="input-label" style={{ margin: 0 }}>Initial Peak Laps</label>
+                            <label className="input-label" style={{ margin: 0 }}>Cliff Lap Start</label>
                             <input type="number" step="1" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.HARD_WINDOW} onChange={e => handleConstantChange('HARD_WINDOW', e.target.value)} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <label className="input-label" style={{ margin: 0 }}>Cliff Degradation</label>
+                            <input type="number" step="0.001" className="glass-input" style={{ width: '80px', padding: '0.5rem' }} value={constants.HARD_CLIFF} onChange={e => handleConstantChange('HARD_CLIFF', e.target.value)} />
                         </div>
                     </div>
                 </div>

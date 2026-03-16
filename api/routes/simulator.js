@@ -28,20 +28,22 @@ function simulateSingleRace(raceData, constants) {
 
     for (let lap = 1; lap <= totalLaps; lap++) {
         drivers.forEach(driver => {
-            let speedOffset = 0; let degRate = 0; let window = 0;
+            let speedOffset = 0; let degRate = 0; let cliffStart = 0; let cliffSlope = 0;
             switch (driver.currentTire) {
-                case 'SOFT': speedOffset = C.SOFT_SPEED; degRate = C.SOFT_DEG; window = C.SOFT_WINDOW; break;
-                case 'MEDIUM': speedOffset = C.MEDIUM_SPEED; degRate = C.MEDIUM_DEG; window = C.MEDIUM_WINDOW; break;
-                case 'HARD': speedOffset = C.HARD_SPEED; degRate = C.HARD_DEG; window = C.HARD_WINDOW; break;
-                case 'INTERMEDIATE': speedOffset = C.INTERMEDIATE_SPEED; degRate = C.INTERMEDIATE_DEG; window = C.INTERMEDIATE_WINDOW; break;
-                case 'WET': speedOffset = C.WET_SPEED; degRate = C.WET_DEG; window = C.WET_WINDOW; break;
+                case 'SOFT': speedOffset = C.SOFT_SPEED; degRate = C.SOFT_DEG; cliffStart = C.SOFT_WINDOW; cliffSlope = C.SOFT_CLIFF; break;
+                case 'MEDIUM': speedOffset = C.MEDIUM_SPEED; degRate = C.MEDIUM_DEG; cliffStart = C.MEDIUM_WINDOW; cliffSlope = C.MEDIUM_CLIFF; break;
+                case 'HARD': speedOffset = C.HARD_SPEED; degRate = C.HARD_DEG; cliffStart = C.HARD_WINDOW; cliffSlope = C.HARD_CLIFF; break;
+                case 'INTERMEDIATE': speedOffset = C.INTERMEDIATE_SPEED; degRate = C.INTERMEDIATE_DEG; cliffStart = C.INTERMEDIATE_WINDOW; cliffSlope = C.INTERMEDIATE_CLIFF; break;
+                case 'WET': speedOffset = C.WET_SPEED; degRate = C.WET_DEG; cliffStart = C.WET_WINDOW; cliffSlope = C.WET_CLIFF; break;
             }
 
-            const tempModifier = 1 + ((trackTemp - C.NOMINAL_TEMP) * C.TEMP_SENSITIVITY);
-            const effectiveAge = Math.max(0, driver.tireAge - window);
-            const degradationEffect = (effectiveAge * degRate) * tempModifier;
+            const tempFactor = 1.0 + ((trackTemp - C.NOMINAL_TEMP) * C.TEMP_SENSITIVITY);
             
-            const lapTime = basePace + speedOffset + degradationEffect;
+            const ageTerm = driver.tireAge * degRate * tempFactor;
+            const cliffLaps = Math.max(0, driver.tireAge - cliffStart);
+            const cliffTerm = cliffLaps * cliffSlope * tempFactor;
+            
+            const lapTime = basePace + speedOffset + ageTerm + cliffTerm;
             driver.totalTime += lapTime;
 
             if (driver.pitMap[lap]) {
