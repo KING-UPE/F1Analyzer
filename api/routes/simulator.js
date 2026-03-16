@@ -10,7 +10,7 @@ function simulateSingleRace(raceData, constants) {
     const pitPenalty = raceData.race_config.pit_lane_time;
     const C = constants;
     
-    const drivers = Object.values(raceData.strategies).map(d => ({
+    const drivers = Object.entries(raceData.strategies).map(([position_key, d]) => ({
         id: d.driver_id,
         currentTire: d.starting_tire,
         tireAge: 1,
